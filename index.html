@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="640">
+  <meta http-equiv="refresh" content="60">
   <title>ProyeccionesExpertis_JV</title>
   <style>
     body {
       margin: 0;
       background-color: rgb(66, 65, 65);
+      font-family: Arial, sans-serif;
     }
 
     .carousel {
@@ -55,6 +56,80 @@
     .arrow-right {
       right: 10px;
     }
+
+    /* Contador de tiempo */
+    .timer-container {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      width: 80px;
+      height: 80px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-circle {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .timer-background {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 4;
+    }
+
+    .timer-progress {
+      fill: none;
+      stroke: #4CAF50;
+      stroke-width: 4;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+    }
+
+    .timer-progress.expired {
+      stroke: #ff4444;
+      animation: pulse 2s infinite;
+    }
+
+    .timer-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+      transition: color 0.5s ease;
+    }
+
+    .timer-text.expired {
+      color: #ff4444;
+    }
+
+    .timer-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 12px;
+      white-space: nowrap;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -93,39 +168,87 @@
     <img src="./images/imagen_31.jpg" alt="Imagen 31" />
     <img src="./images/imagen_32.jpg" alt="Imagen 32" />
     <img src="./images/imagen_33.jpg" alt="Imagen 33" />
-    <!-- <img src="./images/imagen_ad2.jpg" alt="Imagen 9" /> -->
 
     <button class="arrow arrow-left" id="prev">&#8592;</button>
     <button class="arrow arrow-right" id="next">&#8594;</button>
   </div>
 
+  <!-- Contador de tiempo -->
+  <div class="timer-container">
+    <div class="timer-circle">
+      <svg width="80" height="80" viewBox="0 0 36 36">
+        <path class="timer-background"
+          d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+        <path class="timer-progress"
+          id="timer-progress"
+          stroke-dasharray="100, 100"
+          d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+      </svg>
+      <div class="timer-text" id="timer-text">60</div>
+      <div class="timer-label">Actualización</div>
+    </div>
+  </div>
+
   <script>
-  const images = document.querySelectorAll('.carousel img');
-  const prevBtn = document.getElementById('prev');
-  const nextBtn = document.getElementById('next');
-  let current = 0;
+    const images = document.querySelectorAll('.carousel img');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const timerText = document.getElementById('timer-text');
+    const timerProgress = document.getElementById('timer-progress');
+    let current = 0;
+    let countdown = 60; // 60 segundos
+    let countdownActive = true;
 
-  function showImage(index) {
-    images.forEach((img, i) => {
-      img.classList.toggle('active', i === index);
+    function showImage(index) {
+      images.forEach((img, i) => {
+        img.classList.toggle('active', i === index);
+      });
+    }
+
+    prevBtn.addEventListener('click', () => {
+      current = (current - 1 + images.length) % images.length;
+      showImage(current);
     });
-  }
 
-  prevBtn.addEventListener('click', () => {
-    current = (current - 1 + images.length) % images.length;
-    showImage(current);
-  });
+    nextBtn.addEventListener('click', () => {
+      current = (current + 1) % images.length;
+      showImage(current);
+    });
 
-  nextBtn.addEventListener('click', () => {
-    current = (current + 1) % images.length;
-    showImage(current);
-  });
+    // Cambio automático cada 10 segundos
+    setInterval(() => {
+      current = (current + 1) % images.length;
+      showImage(current);
+    }, 10000);
 
-  // ✅ Cambio automático cada 10 segundos
-  setInterval(() => {
-    current = (current + 1) % images.length;
-    showImage(current);
-  }, 10000);
-</script>
+    // Contador de actualización
+    function updateCountdown() {
+      if (countdownActive) {
+        countdown--;
+        timerText.textContent = countdown;
+        
+        // Actualizar la barra de progreso
+        const progress = (countdown / 60) * 100;
+        timerProgress.style.strokeDashoffset = progress;
+        
+        // Cuando llegue a cero, cambiar a rojo y detener
+        if (countdown <= 0) {
+          countdownActive = false;
+          timerText.textContent = "0";
+          timerText.classList.add('expired');
+          timerProgress.classList.add('expired');
+        }
+      }
+    }
+
+    // Iniciar el contador
+    setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
