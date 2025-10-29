@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="60">
+  <meta http-equiv="refresh" content="320">
   <title>ProyeccionesExpertis_JV</title>
   <style>
     body {
@@ -57,11 +57,11 @@
       right: 10px;
     }
 
-    /* Contador de tiempo */
+    /* Contador de tiempo - AHORA EN IZQUIERDA */
     .timer-container {
       position: fixed;
       top: 15px;
-      right: 15px;
+      left: 15px; /* Cambiado de right a left */
       width: 80px;
       height: 80px;
       z-index: 10;
@@ -173,7 +173,7 @@
     <button class="arrow arrow-right" id="next">&#8594;</button>
   </div>
 
-  <!-- Contador de tiempo -->
+  <!-- Contador de tiempo - AHORA EN IZQUIERDA -->
   <div class="timer-container">
     <div class="timer-circle">
       <svg width="80" height="80" viewBox="0 0 36 36">
@@ -190,7 +190,7 @@
             a 15.9155 15.9155 0 0 1 0 -31.831"
         />
       </svg>
-      <div class="timer-text" id="timer-text">60</div>
+      <div class="timer-text" id="timer-text">120</div>
       <div class="timer-label">Actualización</div>
     </div>
   </div>
@@ -202,7 +202,9 @@
     const timerText = document.getElementById('timer-text');
     const timerProgress = document.getElementById('timer-progress');
     let current = 0;
-    let countdown = 60; // 60 segundos
+    
+    let initialCountdown = 320;
+    let countdown = initialCountdown;
     let countdownActive = true;
 
     function showImage(index) {
@@ -234,7 +236,7 @@
         timerText.textContent = countdown;
         
         // Actualizar la barra de progreso
-        const progress = (countdown / 60) * 100;
+        const progress = (countdown / initialCountdown) * 100;
         timerProgress.style.strokeDashoffset = progress;
         
         // Cuando llegue a cero, cambiar a rojo y detener
