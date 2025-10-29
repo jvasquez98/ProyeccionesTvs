@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="10">
+  <meta http-equiv="refresh" content="640">
   <title>ProyeccionesExpertis_JV</title>
   <style>
     body {
@@ -121,11 +121,11 @@
     showImage(current);
   });
 
-  // ✅ Cambio automático cada 15 segundos
+  // ✅ Cambio automático cada 10 segundos
   setInterval(() => {
     current = (current + 1) % images.length;
     showImage(current);
-  }, 15000);
+  }, 10000);
 </script>
 </body>
 </html>
