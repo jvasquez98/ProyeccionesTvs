@@ -217,7 +217,7 @@
   </div>
 
   <!-- Indicador de estado WebRTC -->
-  <div class="webrtc-status" id="webrtc-status">WebRTC: Iniciando...</div>
+  <div class="webrtc-status" id="webrtc-status">Prevención suspensión: Iniciando...</div>
 
   <script>
     const images = document.querySelectorAll('.carousel img');
@@ -277,113 +277,93 @@
     // Iniciar el contador
     setInterval(updateCountdown, 1000);
 
-    // ========== CÓDIGO WEBRTC MEJORADO ==========
+    // ========== SOLUCIÓN SIMPLIFICADA PARA EVITAR SUSPENSIÓN ==========
     
     let activityInterval;
+    let activityCounter = 0;
     
-    async function initializeWebRTC() {
+    function startAntiSleep() {
+      console.log("Iniciando prevención de suspensión...");
+      updateStatus("Prevención activa ✓", "connected");
+      
+      // Usar múltiples métodos para máxima efectividad
+      activityInterval = setInterval(() => {
+        activityCounter++;
+        
+        // Método 1: Simular actividad de red (más efectivo)
+        simulateNetworkActivity();
+        
+        // Método 2: Simular interacción de usuario
+        simulateUserInteraction();
+        
+        // Método 3: Pequeños cambios en el DOM
+        simulateDOMActivity();
+        
+        console.log(`Actividad anti-suspensión #${activityCounter} ejecutada: ${new Date().toLocaleTimeString()}`);
+        
+      }, 30000); // Ejecutar cada 30 segundos
+    }
+    
+    function simulateNetworkActivity() {
+      // Intentar crear una conexión WebRTC simple
       try {
-        updateWebRTCStatus("WebRTC: Inicializando...", "default");
-        
-        // Verificar si WebRTC está disponible
-        if (!window.RTCPeerConnection) {
-          throw new Error("WebRTC no está disponible en este navegador");
+        if (window.RTCPeerConnection) {
+          const pc = new RTCPeerConnection();
+          // Solo crear la conexión ya genera actividad de red
+          setTimeout(() => pc.close(), 1000);
         }
-        
-        // Configuración simple sin servidores STUN (conexión local)
-        const configuration = {
-          iceServers: [
-            // Servidores STUN gratuitos
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' }
-          ]
-        };
-        
-        // Crear dos conexiones peer (local y "remota")
-        const localPeer = new RTCPeerConnection(configuration);
-        const remotePeer = new RTCPeerConnection(configuration);
-        
-        // Configurar el canal de datos en el peer local
-        const dataChannel = localPeer.createDataChannel("keepAlive", {
-          ordered: false,
-          maxRetransmits: 0
-        });
-        
-        dataChannel.onopen = () => {
-          updateWebRTCStatus("WebRTC: Conectado ✓", "connected");
-          console.log("Canal de datos WebRTC abierto");
-          
-          // Enviar datos periódicamente para mantener la actividad
-          activityInterval = setInterval(() => {
-            if (dataChannel.readyState === 'open') {
-              const timestamp = new Date().toISOString();
-              dataChannel.send(`keepAlive-${timestamp}`);
-              console.log("Mensaje keep-alive enviado:", timestamp);
-            }
-          }, 25000); // Enviar cada 25 segundos
-        };
-        
-        dataChannel.onclose = () => {
-          updateWebRTCStatus("WebRTC: Desconectado", "error");
-          console.log("Canal de datos WebRTC cerrado");
-        };
-        
-        dataChannel.onerror = (error) => {
-          updateWebRTCStatus("WebRTC: Error", "error");
-          console.error("Error en canal de datos:", error);
-        };
-        
-        // Manejar candidatos ICE
-        localPeer.onicecandidate = ({ candidate }) => {
-          if (candidate) {
-            remotePeer.addIceCandidate(candidate).catch(console.error);
-          }
-        };
-        
-        remotePeer.onicecandidate = ({ candidate }) => {
-          if (candidate) {
-            localPeer.addIceCandidate(candidate).catch(console.error);
-          }
-        };
-        
-        // Cuando el peer remoto recibe el canal de datos
-        remotePeer.ondatachannel = ({ channel }) => {
-          channel.onmessage = ({ data }) => {
-            console.log("Mensaje recibido:", data);
-            // Simular respuesta para mantener actividad bidireccional
-            if (data.includes('keepAlive')) {
-              channel.send(`ack-${Date.now()}`);
-            }
-          };
-        };
-        
-        // Crear oferta y respuesta
-        const offer = await localPeer.createOffer();
-        await localPeer.setLocalDescription(offer);
-        
-        await remotePeer.setRemoteDescription(offer);
-        const answer = await remotePeer.createAnswer();
-        await remotePeer.setLocalDescription(answer);
-        
-        await localPeer.setRemoteDescription(answer);
-        
-        // Verificar conexión después de un tiempo
-        setTimeout(() => {
-          if (dataChannel.readyState !== 'open') {
-            console.warn("WebRTC no se pudo conectar, usando método alternativo");
-            startFallbackActivity();
-          }
-        }, 5000);
-        
-      } catch (error) {
-        console.error("Error en WebRTC:", error);
-        updateWebRTCStatus("WebRTC: Usando método alternativo", "error");
-        startFallbackActivity();
+      } catch (e) {
+        // Fallback: usar fetch
+        fetch(window.location.href, { 
+          method: 'HEAD', 
+          cache: 'no-store',
+          mode: 'no-cors'
+        }).catch(() => {});
       }
     }
     
-    function updateWebRTCStatus(message, type = "default") {
+    function simulateUserInteraction() {
+      // Simular movimiento de mouse en diferentes ubicaciones
+      const events = ['mousemove', 'mousedown', 'mouseup'];
+      const eventType = events[Math.floor(Math.random() * events.length)];
+      
+      const event = new MouseEvent(eventType, {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: 50 + Math.random() * (window.innerWidth - 100),
+        clientY: 50 + Math.random() * (window.innerHeight - 100)
+      });
+      
+      document.dispatchEvent(event);
+      
+      // También simular evento de teclado ocasionalmente
+      if (activityCounter % 3 === 0) {
+        const keyEvent = new KeyboardEvent('keydown', {
+          key: ' ',
+          code: 'Space',
+          keyCode: 32,
+          which: 32,
+          bubbles: true
+        });
+        document.dispatchEvent(keyEvent);
+      }
+    }
+    
+    function simulateDOMActivity() {
+      // Cambio sutil en el título (no visible para el usuario)
+      const originalTitle = document.title;
+      if (activityCounter % 2 === 0) {
+        document.title = originalTitle + " ";
+      } else {
+        document.title = originalTitle.trim();
+      }
+      
+      // Pequeño cambio en un atributo de data
+      webrtcStatus.setAttribute('data-last-activity', Date.now().toString());
+    }
+    
+    function updateStatus(message, type = "default") {
       webrtcStatus.textContent = message;
       webrtcStatus.className = "webrtc-status";
       if (type === "connected") {
@@ -393,64 +373,40 @@
       }
     }
     
-    // Método alternativo si WebRTC no funciona
-    function startFallbackActivity() {
-      console.log("Iniciando método alternativo para mantener activa la pantalla");
-      
-      // Usar múltiples métodos para mayor efectividad
-      activityInterval = setInterval(() => {
-        // 1. Simular actividad de red con fetch
-        fetch(window.location.href, { 
-          method: 'HEAD', 
-          cache: 'no-cache' 
-        }).catch(() => {});
-        
-        // 2. Simular movimiento de mouse
-        simulateMouseMovement();
-        
-        // 3. Cambiar ligeramente el título (actividad DOM)
-        const originalTitle = document.title;
-        document.title = originalTitle + " ";
-        setTimeout(() => {
-          document.title = originalTitle;
-        }, 100);
-        
-        console.log("Actividad simulada ejecutada:", new Date().toLocaleTimeString());
-      }, 45000); // Cada 45 segundos
-    }
+    // Iniciar inmediatamente
+    startAntiSleep();
     
-    function simulateMouseMovement() {
-      const event = new MouseEvent('mousemove', {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-        clientX: 10 + Math.random() * (window.innerWidth - 20),
-        clientY: 10 + Math.random() * (window.innerHeight - 20)
-      });
-      document.dispatchEvent(event);
-    }
+    // También ejecutar una actividad inicial adicional
+    setTimeout(() => {
+      simulateUserInteraction();
+      simulateNetworkActivity();
+    }, 2000);
     
-    // Inicializar cuando la página cargue
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeWebRTC);
-    } else {
-      initializeWebRTC();
-    }
+    // Usar el evento de visibilidad de página como respaldo adicional
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Si la página está oculta, ser más agresivo con la actividad
+        console.log("Página oculta - incrementando actividad anti-suspensión");
+      } else {
+        // Cuando la página se vuelve visible, forzar actividad inmediata
+        simulateUserInteraction();
+      }
+    });
     
-    // Limpiar recursos
+    // Forzar actividad cuando la ventana gana foco
+    window.addEventListener('focus', () => {
+      simulateUserInteraction();
+    });
+    
+    // Limpiar al cerrar
     window.addEventListener('beforeunload', () => {
       if (activityInterval) {
         clearInterval(activityInterval);
       }
     });
     
-    // También usar el evento de visibilidad de la página
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        // Si la página se vuelve visible, forzar actividad
-        simulateMouseMovement();
-      }
-    });
+    // Actividad inicial para asegurar que comience inmediatamente
+    console.log("Sistema de prevención de suspensión inicializado");
   </script>
 </body>
 </html>
