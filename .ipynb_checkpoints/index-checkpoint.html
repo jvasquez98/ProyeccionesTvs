@@ -125,6 +125,19 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
     }
 
+    /* Indicador de estado WebRTC */
+    .webrtc-status {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 100;
+    }
+
     @keyframes pulse {
       0% { opacity: 1; }
       50% { opacity: 0.7; }
@@ -195,12 +208,16 @@
     </div>
   </div>
 
+  <!-- Indicador de estado WebRTC -->
+  <div class="webrtc-status" id="webrtc-status">WebRTC: Iniciando...</div>
+
   <script>
     const images = document.querySelectorAll('.carousel img');
     const prevBtn = document.getElementById('prev');
     const nextBtn = document.getElementById('next');
     const timerText = document.getElementById('timer-text');
     const timerProgress = document.getElementById('timer-progress');
+    const webrtcStatus = document.getElementById('webrtc-status');
     let current = 0;
     
     let initialCountdown = 320;
@@ -251,6 +268,113 @@
 
     // Iniciar el contador
     setInterval(updateCountdown, 1000);
+
+    // ========== CÓDIGO WEBRTC PARA EVITAR SUSPENSIÓN ==========
+    
+    // Configuración de WebRTC para simular actividad de red
+    let peerConnection;
+    let dataChannel;
+    let activityInterval;
+    
+    async function initializeWebRTC() {
+      try {
+        webrtcStatus.textContent = "WebRTC: Inicializando...";
+        
+        // Crear conexión peer-to-peer
+        const configuration = {
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+          ]
+        };
+        
+        peerConnection = new RTCPeerConnection(configuration);
+        
+        // Crear canal de datos para simular actividad
+        dataChannel = peerConnection.createDataChannel('keepAliveChannel');
+        
+        dataChannel.onopen = () => {
+          webrtcStatus.textContent = "WebRTC: Conectado";
+          console.log("Canal de datos WebRTC abierto - simulando actividad");
+          
+          // Enviar datos periódicamente para mantener la conexión activa
+          activityInterval = setInterval(() => {
+            if (dataChannel.readyState === 'open') {
+              dataChannel.send('keepAlive');
+            }
+          }, 30000); // Enviar cada 30 segundos
+        };
+        
+        dataChannel.onclose = () => {
+          webrtcStatus.textContent = "WebRTC: Desconectado";
+          clearInterval(activityInterval);
+          console.log("Canal de datos WebRTC cerrado");
+        };
+        
+        dataChannel.onerror = (error) => {
+          webrtcStatus.textContent = "WebRTC: Error";
+          console.error("Error en canal de datos:", error);
+        };
+        
+        // Crear oferta
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        
+        // En una implementación real, enviaríamos la oferta a un peer remoto
+        // Pero para nuestro propósito, solo necesitamos la conexión local
+        // Simulamos el intercambio de señales creando una respuesta local
+        
+        // Para una conexión local, podemos usar la misma descripción como respuesta
+        await peerConnection.setRemoteDescription(offer);
+        
+      } catch (error) {
+        console.error("Error inicializando WebRTC:", error);
+        webrtcStatus.textContent = "WebRTC: Error de inicialización";
+        
+        // Si WebRTC falla, intentamos con una alternativa más simple
+        startFallbackActivity();
+      }
+    }
+    
+    // Método alternativo si WebRTC no está disponible
+    function startFallbackActivity() {
+      webrtcStatus.textContent = "WebRTC: Usando método alternativo";
+      console.log("Usando método alternativo para mantener activa la pantalla");
+      
+      // Simular actividad periódica con fetch a una URL vacía
+      activityInterval = setInterval(() => {
+        // Esta petición fallará pero generará actividad de red
+        fetch('/keep-alive', { method: 'HEAD' }).catch(() => {});
+        
+        // También simular movimiento del mouse virtual
+        simulateMouseMovement();
+      }, 60000); // Cada minuto
+    }
+    
+    // Simular movimiento de mouse para mantener activa la pantalla
+    function simulateMouseMovement() {
+      // Crear un evento de movimiento de mouse virtual
+      const event = new MouseEvent('mousemove', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: Math.random() * window.innerWidth,
+        clientY: Math.random() * window.innerHeight
+      });
+      
+      // Disparar el evento
+      document.dispatchEvent(event);
+    }
+    
+    // Inicializar WebRTC cuando la página cargue
+    document.addEventListener('DOMContentLoaded', initializeWebRTC);
+    
+    // Limpiar recursos cuando la página se cierre
+    window.addEventListener('beforeunload', () => {
+      if (activityInterval) clearInterval(activityInterval);
+      if (dataChannel) dataChannel.close();
+      if (peerConnection) peerConnection.close();
+    });
   </script>
 </body>
 </html>
