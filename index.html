@@ -419,7 +419,7 @@
             const oscillator = audioContext.createOscillator();
             const destination = audioContext.createMediaStreamDestination();
             
-            oscillator.frequency.value = 0; // Frecuencia 0 = silencio
+            oscillator.frequency.value = 1; // Frecuencia 0 = silencio
             oscillator.connect(destination);
             oscillator.start();
             
