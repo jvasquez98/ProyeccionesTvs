@@ -1,451 +1,301 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="320">
-  <title>ProyeccionesExpertis_JV</title>
-  <style>
-    body {
-      margin: 0;
-      background-color: rgb(66, 65, 65);
-      font-family: Arial, sans-serif;
-    }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="7200">
+  <title>ProyeccionesExpertis_JV</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: rgb(66, 65, 65);
+      font-family: Arial, sans-serif;
+    }
 
-    .carousel {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
+    .carousel {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-    .carousel img {
-      display: none;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+    .carousel img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
-    .carousel img.active {
-      display: block;
-    }
+    .carousel img.active {
+      display: block;
+    }
 
-    .arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 50px;
-      color: white;
-      background-color: rgba(0, 0, 0, 0.3);
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-      z-index: 1;
-      user-select: none;
-      border-radius: 50%;
-    }
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 50px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.3);
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      z-index: 1;
+      user-select: none;
+      border-radius: 50%;
+    }
 
-    .arrow:hover {
-      background-color: rgba(0, 0, 0, 0.5);
-    }
+    .arrow:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
 
-    .arrow-left {
-      left: 10px;
-    }
+    .arrow-left {
+      left: 10px;
+    }
 
-    .arrow-right {
-      right: 10px;
-    }
+    .arrow-right {
+      right: 10px;
+    }
 
-    /* Contador de tiempo - AHORA EN IZQUIERDA */
-    .timer-container {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      width: 80px;
-      height: 80px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    /* Contador de tiempo - AHORA EN IZQUIERDA */
+    .timer-container {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      width: 80px;
+      height: 80px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    .timer-circle {
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
+    .timer-circle {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
 
-    .timer-background {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.2);
-      stroke-width: 4;
-    }
+    .timer-background {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 4;
+    }
 
-    .timer-progress {
-      fill: none;
-      stroke: #4CAF50;
-      stroke-width: 4;
-      stroke-linecap: round;
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-      transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
-    }
+    .timer-progress {
+      fill: none;
+      stroke: #4CAF50;
+      stroke-width: 4;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+    }
 
-    .timer-progress.expired {
-      stroke: #ff4444;
-      animation: pulse 2s infinite;
-    }
+    .timer-progress.expired {
+      stroke: #ff4444;
+      animation: pulse 2s infinite;
+    }
 
-    .timer-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 20px;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-      transition: color 0.5s ease;
-    }
+    .timer-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+      transition: color 0.5s ease;
+    }
 
-    .timer-text.expired {
-      color: #ff4444;
-    }
+    .timer-text.expired {
+      color: #ff4444;
+    }
 
-    .timer-label {
-      position: absolute;
-      bottom: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 12px;
-      white-space: nowrap;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-    }
+    .timer-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 12px;
+      white-space: nowrap;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
 
-    /* Indicador discreto de estado WebRTC */
-    .status-indicator {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      z-index: 100;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s ease;
-    }
-
-    .status-indicator.connected {
-      background-color: #4CAF50;
-      animation: pulse 2s infinite;
-    }
-
-    .status-indicator.error {
-      background-color: #ff4444;
-    }
-
-    .status-indicator.connecting {
-      background-color: #ff9800;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.6; }
-      100% { opacity: 1; }
-    }
-  </style>
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
 
-  <div class="carousel">
-    <img src="./images/imagen_01.jpg" class="active" alt="Imagen1" />
-    <img src="./images/imagen_02.jpg" alt="Imagen 2" />
-    <img src="./images/imagen_03.jpg" alt="Imagen 3" />
-    <img src="./images/imagen_04.jpg" alt="Imagen 4" />
-    <img src="./images/imagen_05.jpg" alt="Imagen 5" />
-    <img src="./images/imagen_06.jpg" alt="Imagen 6" />
-    <img src="./images/imagen_07.jpg" alt="Imagen 7" />
-    <img src="./images/imagen_08.jpg" alt="Imagen 8" />
-    <img src="./images/imagen_09.jpg" alt="Imagen 9" />
-    <img src="./images/imagen_10.jpg" alt="Imagen 10" />
-    <img src="./images/imagen_11.jpg" alt="Imagen 11" />
-    <img src="./images/imagen_12.jpg" alt="Imagen 12" />
-    <img src="./images/imagen_13.jpg" alt="Imagen 13" />
-    <img src="./images/imagen_14.jpg" alt="Imagen 14" />
-    <img src="./images/imagen_15.jpg" alt="Imagen 15" />
-    <img src="./images/imagen_16.jpg" alt="Imagen 16" />
-    <img src="./images/imagen_17.jpg" alt="Imagen 17" />
-    <img src="./images/imagen_18.jpg" alt="Imagen 18" />
-    <img src="./images/imagen_19.jpg" alt="Imagen 19" />
-    <img src="./images/imagen_20.jpg" alt="Imagen 20" />
-    <img src="./images/imagen_21.jpg" alt="Imagen 21" />
-    <img src="./images/imagen_22.jpg" alt="Imagen 22" />
-    <img src="./images/imagen_23.jpg" alt="Imagen 23" />
-    <img src="./images/imagen_24.jpg" alt="Imagen 24" />
-    <img src="./images/imagen_25.jpg" alt="Imagen 25" />
-    <img src="./images/imagen_26.jpg" alt="Imagen 26" />
-    <img src="./images/imagen_27.jpg" alt="Imagen 27" />
-    <img src="./images/imagen_28.jpg" alt="Imagen 28" />
-    <img src="./images/imagen_29.jpg" alt="Imagen 29" />
-    <img src="./images/imagen_30.jpg" alt="Imagen 30" />
-    <img src="./images/imagen_31.jpg" alt="Imagen 31" />
-    <img src="./images/imagen_32.jpg" alt="Imagen 32" />
-    <img src="./images/imagen_33.jpg" alt="Imagen 33" />
+  <div class="carousel">
+    <img src="./images/imagen_01.jpg" class="active" alt="Imagen1" />
+    <img src="./images/imagen_02.jpg" alt="Imagen 2" />
+    <img src="./images/imagen_03.jpg" alt="Imagen 3" />
+    <img src="./images/imagen_04.jpg" alt="Imagen 4" />
+    <img src="./images/imagen_05.jpg" alt="Imagen 5" />
+    <img src="./images/imagen_06.jpg" alt="Imagen 6" />
+    <img src="./images/imagen_07.jpg" alt="Imagen 7" />
+    <img src="./images/imagen_08.jpg" alt="Imagen 8" />
+    <img src="./images/imagen_09.jpg" alt="Imagen 9" />
+    <img src="./images/imagen_10.jpg" alt="Imagen 10" />
+    <img src="./images/imagen_11.jpg" alt="Imagen 11" />
+    <img src="./images/imagen_12.jpg" alt="Imagen 12" />
+    <img src="./images/imagen_13.jpg" alt="Imagen 13" />
+    <img src="./images/imagen_14.jpg" alt="Imagen 14" />
+    <img src="./images/imagen_15.jpg" alt="Imagen 15" />
+    <img src="./images/imagen_16.jpg" alt="Imagen 16" />
+    <img src="./images/imagen_17.jpg" alt="Imagen 17" />
+    <img src="./images/imagen_18.jpg" alt="Imagen 18" />
+    <img src="./images/imagen_19.jpg" alt="Imagen 19" />
+    <img src="./images/imagen_20.jpg" alt="Imagen 20" />
+    <img src="./images/imagen_21.jpg" alt="Imagen 21" />
+    <img src="./images/imagen_22.jpg" alt="Imagen 22" />
+    <img src="./images/imagen_23.jpg" alt="Imagen 23" />
+    <img src="./images/imagen_24.jpg" alt="Imagen 24" />
+    <img src="./images/imagen_25.jpg" alt="Imagen 25" />
+    <img src="./images/imagen_26.jpg" alt="Imagen 26" />
+    <img src="./images/imagen_27.jpg" alt="Imagen 27" />
+    <img src="./images/imagen_28.jpg" alt="Imagen 28" />
+    <img src="./images/imagen_29.jpg" alt="Imagen 29" />
+    <img src="./images/imagen_30.jpg" alt="Imagen 30" />
+    <img src="./images/imagen_31.jpg" alt="Imagen 31" />
+    <img src="./images/imagen_32.jpg" alt="Imagen 32" />
+    <img src="./images/imagen_33.jpg" alt="Imagen 33" />
 
-    <button class="arrow arrow-left" id="prev">&#8592;</button>
-    <button class="arrow arrow-right" id="next">&#8594;</button>
-  </div>
+    <button class="arrow arrow-left" id="prev">&#8592;</button>
+    <button class="arrow arrow-right" id="next">&#8594;</button>
+  </div>
 
-  <!-- Contador de tiempo - AHORA EN IZQUIERDA -->
-  <div class="timer-container">
-    <div class="timer-circle">
-      <svg width="80" height="80" viewBox="0 0 36 36">
-        <path class="timer-background"
-          d="M18 2.0845
-            a 15.9155 15.9155 0 0 1 0 31.831
-            a 15.9155 15.9155 0 0 1 0 -31.831"
-        />
-        <path class="timer-progress"
-          id="timer-progress"
-          stroke-dasharray="100, 100"
-          d="M18 2.0845
-            a 15.9155 15.9155 0 0 1 0 31.831
-            a 15.9155 15.9155 0 0 1 0 -31.831"
-        />
-      </svg>
-      <div class="timer-text" id="timer-text">120</div>
-      <div class="timer-label">Actualización</div>
-    </div>
-  </div>
+    <div class="timer-container">
+    <div class="timer-circle">
+      <svg width="80" height="80" viewBox="0 0 36 36">
+        <path class="timer-background"
+          d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+        <path class="timer-progress"
+          id="timer-progress"
+          stroke-dasharray="100, 100"
+          d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+      </svg>
+      <div class="timer-text" id="timer-text">320</div>
+      <div class="timer-label">Actualización</div>
+    </div>
+  </div>
 
-  <!-- Indicador discreto de estado -->
-  <div class="status-indicator" id="status-indicator" title="Estado WebRTC: Conectando..."></div>
-<script>
-    const images = document.querySelectorAll('.carousel img');
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
-    const timerText = document.getElementById('timer-text');
-    const timerProgress = document.getElementById('timer-progress');
-    const statusIndicator = document.getElementById('status-indicator');
-    let current = 0;
-    
-    let initialCountdown = 320;
-    let countdown = initialCountdown;
-    let countdownActive = true;
+  <script>
+    // =========================================================================
+    // 1. IMPLEMENTACIÓN DE SCREEN WAKE LOCK API (MÉTODO PRINCIPAL) 💡
+    // =========================================================================
+    let wakeLock = null;
 
-    function showImage(index) {
-      images.forEach((img, i) => {
-        img.classList.toggle('active', i === index);
-      });
-    }
+    const requestWakeLock = async () => {
+      if ('wakeLock' in navigator && wakeLock === null) {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+          console.log('Bloqueo de pantalla (Wake Lock) activo. ✅');
+          
+          wakeLock.addEventListener('release', () => {
+            console.log('Bloqueo de pantalla liberado por el sistema. Intentando re-adquirir.');
+            wakeLock = null;
+            // Esto es opcional, pero intenta re-adquirirlo si el sistema lo suelta
+            requestWakeLock(); 
+          });
 
-    prevBtn.addEventListener('click', () => {
-      current = (current - 1 + images.length) % images.length;
-      showImage(current);
-    });
+        } catch (err) {
+          console.error(`Error al solicitar Wake Lock: ${err.name}. Confía en el meta refresh.`);
+        }
+      }
+    };
+    
+    const releaseWakeLock = () => {
+      if (wakeLock) {
+        wakeLock.release();
+        wakeLock = null;
+      }
+    };
 
-    nextBtn.addEventListener('click', () => {
-      current = (current + 1) % images.length;
-      showImage(current);
-    });
+    // Adquirir el bloqueo al cargar
+    requestWakeLock();
 
-    // Cambio automático cada 10 segundos
-    setInterval(() => {
-      current = (current + 1) % images.length;
-      showImage(current);
-    }, 10000);
+    // Re-adquirir el bloqueo si la página vuelve a ser visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        requestWakeLock();
+      } else {
+        releaseWakeLock();
+      }
+    });
+    
+    // =========================================================================
+    // CÓDIGO DE CARRUSEL Y CONTADOR ORIGINAL
+    // =========================================================================
 
-    // Contador de actualización
-    function updateCountdown() {
-      if (countdownActive) {
-        countdown--;
-        timerText.textContent = countdown;
-        
-        // Actualizar la barra de progreso
-        const progress = (countdown / initialCountdown) * 100;
-        timerProgress.style.strokeDashoffset = progress;
-        
-        // Cuando llegue a cero, cambiar a rojo y detener
-        if (countdown <= 0) {
-          countdownActive = false;
-          timerText.textContent = "0";
-          timerText.classList.add('expired');
-          timerProgress.classList.add('expired');
-        }
-      }
-    }
+    const images = document.querySelectorAll('.carousel img');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const timerText = document.getElementById('timer-text');
+    const timerProgress = document.getElementById('timer-progress');
+    let current = 0;
+    
+    let initialCountdown = 320;
+    let countdown = initialCountdown;
+    let countdownActive = true;
+    
+    function showImage(index) {
+      images.forEach((img, i) => {
+        img.classList.toggle('active', i === index);
+      });
+    }
 
-    // Iniciar el contador
-    setInterval(updateCountdown, 1000);
+    prevBtn.addEventListener('click', () => {
+      current = (current - 1 + images.length) % images.length;
+      showImage(current);
+    });
 
-    // ========== SOLUCIÓN SIMPLIFICADA Y CONFIABLE ==========
-    
-    let activityInterval;
-    let webrtcConnections = [];
+    nextBtn.addEventListener('click', () => {
+      current = (current + 1) % images.length;
+      showImage(current);
+    });
 
-    async function startAntiSleep() {
-        try {
-            updateStatus('connecting', 'Activando prevención...');
-            
-            // Estrategia 1: Intentar WebRTC simple
-            await initializeSimpleWebRTC();
-            
-            // Estrategia 2: Actividad de red periódica
-            startNetworkActivity();
-            
-            // Estrategia 3: Interacción de usuario simulada
-            startUserInteractionSimulation();
-            
-            updateStatus('connected', 'Prevención activa ✓');
-            console.log('Sistema anti-suspensión activado');
-            
-        } catch (error) {
-            console.error('Error inicializando:', error);
-            updateStatus('error', 'Usando método básico');
-            startBasicActivity();
-        }
-    }
+    // Cambio automático cada 10 segundos
+    setInterval(() => {
+      current = (current + 1) % images.length;
+      showImage(current);
+    }, 10000);
 
-    function initializeSimpleWebRTC() {
-        return new Promise((resolve) => {
-            if (!window.RTCPeerConnection) {
-                resolve();
-                return;
-            }
+    // Contador de actualización
+    function updateCountdown() {
+      if (countdownActive) {
+        countdown--;
+        timerText.textContent = countdown;
+        
+        // Actualizar la barra de progreso
+        const progress = (countdown / initialCountdown) * 100;
+        timerProgress.style.strokeDashoffset = (100 - progress).toFixed(1);
+        
+        if (countdown <= 0) {
+          countdownActive = false;
+          timerText.textContent = "0";
+          timerText.classList.add('expired');
+          timerProgress.classList.add('expired');
+        }
+      }
+    }
 
-            try {
-                // Crear múltiples conexiones WebRTC simples
-                for (let i = 0; i < 2; i++) {
-                    const pc = new RTCPeerConnection({
-                        iceServers: [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' }
-                        ]
-                    });
-
-                    // Solo crear la conexión ya genera actividad
-                    pc.createDataChannel('keepalive');
-                    
-                    pc.createOffer()
-                        .then(offer => pc.setLocalDescription(offer))
-                        .catch(() => {}); // Ignorar errores
-
-                    webrtcConnections.push(pc);
-                }
-                
-                setTimeout(resolve, 1000);
-            } catch (error) {
-                resolve(); // Continuar incluso si WebRTC falla
-            }
-        });
-    }
-
-    function startNetworkActivity() {
-        // Actividad de red cada 30 segundos usando diferentes métodos
-        setInterval(() => {
-            // Método 1: Fetch simple
-            fetch(window.location.href + '?t=' + Date.now(), { 
-                method: 'HEAD',
-                cache: 'no-cache',
-                mode: 'no-cors'
-            }).catch(() => {});
-
-            // Método 2: WebSocket attempt
-            try {
-                const ws = new WebSocket('wss://echo.websocket.org');
-                setTimeout(() => {
-                    if (ws.readyState === WebSocket.CONNECTING) {
-                        ws.close();
-                    }
-                }, 2000);
-            } catch (e) {}
-
-            // Método 3: Imagen fantasma
-            const img = new Image();
-            img.src = window.location.href + '?img=' + Date.now();
-            
-            console.log('Actividad de red generada:', new Date().toLocaleTimeString());
-        }, 30000);
-    }
-
-    function startUserInteractionSimulation() {
-        // Movimiento de mouse cada 45 segundos
-        setInterval(() => {
-            simulateMouseMovement();
-            simulateKeyboardActivity();
-        }, 45000);
-    }
-
-    function startBasicActivity() {
-        // Método de respaldo ultra confiable
-        activityInterval = setInterval(() => {
-            // Actividad de red básica
-            fetch(window.location.href, { 
-                method: 'HEAD',
-                cache: 'no-store'
-            }).catch(() => {});
-            
-            // Interacción de usuario
-            simulateMouseMovement();
-            
-        }, 25000);
-    }
-
-    function simulateMouseMovement() {
-        const events = ['mousemove', 'mousedown', 'mouseup'];
-        const eventType = events[Math.floor(Math.random() * events.length)];
-        
-        const event = new MouseEvent(eventType, {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-            clientX: 100 + Math.random() * (window.innerWidth - 200),
-            clientY: 100 + Math.random() * (window.innerHeight - 200)
-        });
-        
-        document.dispatchEvent(event);
-    }
-
-    function simulateKeyboardActivity() {
-        const event = new KeyboardEvent('keydown', {
-            key: ' ',
-            code: 'Space',
-            bubbles: true
-        });
-        document.dispatchEvent(event);
-    }
-
-    function updateStatus(status, tooltip = '') {
-        statusIndicator.className = 'status-indicator';
-        statusIndicator.classList.add(status);
-        statusIndicator.title = tooltip;
-    }
-
-    // Iniciar inmediatamente
-    startAntiSleep();
-
-    // Actividad inicial forzada
-    setTimeout(() => {
-        simulateMouseMovement();
-        console.log('Actividad inicial ejecutada');
-    }, 2000);
-
-    // Limpiar recursos
-    window.addEventListener('beforeunload', () => {
-        if (activityInterval) clearInterval(activityInterval);
-        webrtcConnections.forEach(pc => pc.close());
-    });
-
-    // Actividad extra cuando la página gana visibilidad
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-            simulateMouseMovement();
-        }
-    });
-</script>
+    // Iniciar el contador
+    setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
