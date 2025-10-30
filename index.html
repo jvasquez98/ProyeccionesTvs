@@ -61,7 +61,7 @@
     .timer-container {
       position: fixed;
       top: 15px;
-      left: 15px; /* Cambiado de right a left */
+      left: 15px;
       width: 80px;
       height: 80px;
       z-index: 10;
@@ -283,82 +283,159 @@
     // Iniciar el contador
     setInterval(updateCountdown, 1000);
 
-    // ========== WEBRTC REAL PARA EVITAR SUSPENSIÓN ==========
+    // ========== WEBRTC CON TRANSMISIÓN DE MEDIOS ==========
     
     let activityInterval;
-    let activityCounter = 0;
     let webrtcConnection = null;
-    
-    async function initializeRealWebRTC() {
-      try {
-        updateStatus('connecting', 'WebRTC: Conectando...');
-        
-        if (!window.RTCPeerConnection) {
-          throw new Error('WebRTC no soportado');
-        }
+    let mediaStream = null;
 
-        // Crear conexión WebRTC real
-        const configuration = {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' }
-          ]
-        };
-
-        webrtcConnection = new RTCPeerConnection(configuration);
-        
-        // Crear canal de datos
-        const dataChannel = webrtcConnection.createDataChannel('keepAlive', {
-          ordered: false,
-          maxRetransmits: 0
-        });
-
-        // Configurar event handlers
-        dataChannel.onopen = () => {
-          console.log('WebRTC DataChannel abierto');
-          updateStatus('connected', 'WebRTC: Conectado ✓');
-          
-          // Enviar keep-alive periódicamente
-          activityInterval = setInterval(() => {
-            if (dataChannel.readyState === 'open') {
-              dataChannel.send(`keepAlive-${Date.now()}`);
-              console.log('Keep-alive WebRTC enviado');
+    async function initializeWebRTCWithMedia() {
+        try {
+            updateStatus('connecting', 'WebRTC: Iniciando transmisión...');
+            
+            if (!window.RTCPeerConnection || !navigator.mediaDevices) {
+                throw new Error('WebRTC no soportado');
             }
-          }, 20000);
-        };
 
-        dataChannel.onclose = () => {
-          console.log('WebRTC DataChannel cerrado');
-          updateStatus('error', 'WebRTC: Desconectado');
-          startFallbackActivity();
-        };
+            // 1. CREAR STREAM DE MEDIOS (sin requerir cámara real)
+            try {
+                mediaStream = await createBlackVideoStream();
+                console.log('Stream de video negro creado');
+            } catch (error) {
+                console.log('No se pudo crear video, usando audio solamente');
+                mediaStream = await createSilentAudioStream();
+            }
 
-        dataChannel.onerror = (error) => {
-          console.error('Error en WebRTC DataChannel:', error);
-          updateStatus('error', 'WebRTC: Error');
-          startFallbackActivity();
-        };
+            // 2. CONFIGURAR CONEXIÓN WEBRTC
+            const configuration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' }
+                ],
+                iceTransportPolicy: 'all',
+                bundlePolicy: 'max-bundle'
+            };
 
-        // Crear oferta
-        const offer = await webrtcConnection.createOffer();
-        await webrtcConnection.setLocalDescription(offer);
+            webrtcConnection = new RTCPeerConnection(configuration);
 
-        // Para conexión local, usar el mismo offer como answer
-        await webrtcConnection.setRemoteDescription(offer);
+            // 3. AGREGAR TRACKS DE MEDIOS A LA CONEXIÓN
+            if (mediaStream.getVideoTracks().length > 0) {
+                webrtcConnection.addTrack(mediaStream.getVideoTracks()[0], mediaStream);
+                console.log('Track de video agregado');
+            }
+            if (mediaStream.getAudioTracks().length > 0) {
+                webrtcConnection.addTrack(mediaStream.getAudioTracks()[0], mediaStream);
+                console.log('Track de audio agregado');
+            }
 
-        // Verificar conexión después de 3 segundos
-        setTimeout(() => {
-          if (dataChannel.readyState !== 'open') {
-            console.log('WebRTC no se conectó, usando fallback');
+            // 4. CONFIGURAR DATA CHANNEL PARA KEEP-ALIVE
+            const dataChannel = webrtcConnection.createDataChannel('keepAlive', {
+                ordered: false
+            });
+
+            dataChannel.onopen = () => {
+                console.log('WebRTC DataChannel abierto con transmisión de medios');
+                updateStatus('connected', 'WebRTC: Transmitiendo medios ✓');
+                
+                // Enviar keep-alive periódicamente
+                activityInterval = setInterval(() => {
+                    if (dataChannel.readyState === 'open') {
+                        dataChannel.send(`media-keepAlive-${Date.now()}`);
+                        console.log('Keep-alive con medios enviado');
+                    }
+                }, 15000);
+            };
+
+            dataChannel.onclose = () => {
+                console.log('WebRTC DataChannel cerrado');
+                updateStatus('error', 'WebRTC: Desconectado');
+                startFallbackActivity();
+            };
+
+            dataChannel.onerror = (error) => {
+                console.error('Error en WebRTC DataChannel:', error);
+                updateStatus('error', 'WebRTC: Error');
+                startFallbackActivity();
+            };
+
+            // 5. MANEJAR CANDIDATOS ICE (actividad de red)
+            webrtcConnection.oniceconnectionstatechange = () => {
+                console.log('Estado ICE:', webrtcConnection.iceConnectionState);
+            };
+
+            webrtcConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    console.log('Candidato ICE generado - actividad de red');
+                }
+            };
+
+            // 6. CREAR Y NEGOCIAR CONEXIÓN
+            const offer = await webrtcConnection.createOffer({
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: true
+            });
+            
+            await webrtcConnection.setLocalDescription(offer);
+            
+            // Simular respuesta remota (para conexión local)
+            await webrtcConnection.setRemoteDescription(offer);
+
+            console.log('WebRTC con medios inicializado correctamente');
+
+        } catch (error) {
+            console.error('Error en WebRTC con medios:', error);
+            updateStatus('error', 'WebRTC: Error - usando fallback');
+            cleanupMedia();
             startFallbackActivity();
-          }
-        }, 3000);
+        }
+    }
 
-      } catch (error) {
-        console.error('Error en WebRTC:', error);
-        updateStatus('error', 'WebRTC: Fallback activado');
-        startFallbackActivity();
-      }
+    // FUNCIÓN PARA CREAR VIDEO NEGRO (sin cámara real)
+    async function createBlackVideoStream() {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            const ctx = canvas.getContext('2d');
+            
+            // Dibujar frame negro
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Crear stream desde canvas
+            const stream = canvas.captureStream(1); // 1 FPS es suficiente
+            
+            return stream;
+        } catch (error) {
+            throw new Error('No se pudo crear video negro');
+        }
+    }
+
+    // FUNCIÓN PARA CREAR AUDIO SILENCIOSO (sin micrófono real)
+    async function createSilentAudioStream() {
+        try {
+            const audioContext = new AudioContext();
+            const oscillator = audioContext.createOscillator();
+            const destination = audioContext.createMediaStreamDestination();
+            
+            oscillator.frequency.value = 0; // Frecuencia 0 = silencio
+            oscillator.connect(destination);
+            oscillator.start();
+            
+            return destination.stream;
+        } catch (error) {
+            // Último recurso: stream vacío
+            return new MediaStream();
+        }
+    }
+
+    // LIMPIAR RECURSOS DE MEDIOS
+    function cleanupMedia() {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
     }
     
     function startFallbackActivity() {
@@ -369,8 +446,6 @@
       }
       
       activityInterval = setInterval(() => {
-        activityCounter++;
-        
         // Simular actividad de red
         fetch(window.location.href, { 
           method: 'HEAD', 
@@ -379,8 +454,6 @@
         
         // Simular interacción de usuario
         simulateUserInteraction();
-        
-        console.log(`Actividad fallback #${activityCounter} ejecutada`);
         
       }, 25000);
     }
@@ -402,8 +475,8 @@
       statusIndicator.title = tooltip;
     }
     
-    // Inicializar WebRTC real
-    initializeRealWebRTC();
+    // Inicializar WebRTC con medios
+    initializeWebRTCWithMedia();
     
     // Limpiar recursos
     window.addEventListener('beforeunload', () => {
@@ -413,6 +486,7 @@
       if (webrtcConnection) {
         webrtcConnection.close();
       }
+      cleanupMedia();
     });
   </script>
 </body>
