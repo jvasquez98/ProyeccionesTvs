@@ -411,33 +411,6 @@
         }
       }, 5000);
     }
-
-  // ==== MANTENER TV ACTIVA - CÓDIGO CORREGIDO ====
-  setInterval(() => {
-    // Disparar eventos de teclado virtual
-    const event = new KeyboardEvent('keydown', {
-      key: 'F15',
-      keyCode: 126,
-      which: 126,
-      bubbles: true
-    });
-    
-    document.dispatchEvent(event);
-    console.log('Manteniendo TV activa - ' + new Date().toLocaleTimeString());
-  }, 2700000); // 45 minutos
-
-  // Iniciar también inmediatamente
-  setTimeout(() => {
-    const initEvent = new KeyboardEvent('keydown', {
-      key: 'F15', 
-      keyCode: 126,
-      which: 126,
-      bubbles: true
-    });
-    document.dispatchEvent(initEvent);
-    console.log('Keep-alive iniciado');
-  }, 5000);
-
 </script>
 </body>
 </html>
