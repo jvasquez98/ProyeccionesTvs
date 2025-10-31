@@ -426,20 +426,6 @@
       console.log('Manteniendo TV activa - ' + new Date().toLocaleTimeString());
     }, 2700000); // 45 minutos
 
-    // Iniciar también inmediatamente al cargar la página
-    setTimeout(() => {
-      const initEvent = new KeyboardEvent('keydown', {
-        key: 'F15',
-        keyCode: 126,
-        which: 126,
-        bubbles: true
-      });
-      document.dispatchEvent(initEvent);
-      console.log('Iniciando keep-alive TV');
-    }, 5000);
-
-    });// <- Si tienes algún cierre de función, va ANTES de este código
-
   </script>
 </body>
 </html>
