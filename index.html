@@ -128,63 +128,63 @@
     /* ESTILOS PARA LOS MENSAJES EN TIEMPO REAL */
     .messages-container {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 400px;
-      max-height: 300px;
+      bottom: 10px;
+      right: 10px;
+      width: 200px; /* Reducido a la mitad */
+      max-height: 150px; /* Reducido a la mitad */
       z-index: 10;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 5px; /* Espacio reducido */
     }
 
     .message {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(50, 50, 50, 0.9));
-      border: 2px solid #4CAF50;
-      border-radius: 15px;
-      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.3); /* Fondo más translúcido */
+      border: none; /* Eliminado el marco verde */
+      border-radius: 8px; /* Bordes más pequeños */
+      padding: 8px 10px; /* Padding reducido */
       color: white;
       animation: slideIn 0.5s ease-out;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(5px); /* Menos blur */
     }
 
     .message-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      padding-bottom: 5px;
+      margin-bottom: 4px; /* Reducido */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Línea más sutil */
+      padding-bottom: 3px; /* Reducido */
     }
 
     .user {
       font-weight: bold;
-      font-size: 1.1em;
-      color: #4CAF50;
+      font-size: 0.8em; /* Texto más pequeño */
+      color: #90EE90; /* Verde más claro y sutil */
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px; /* Reducido */
     }
 
     .timestamp {
-      font-size: 0.8em;
+      font-size: 0.6em; /* Texto más pequeño */
       color: #ccc;
     }
 
     .message-text {
-      font-size: 1.2em;
-      line-height: 1.4;
+      font-size: 0.8em; /* Texto más pequeño */
+      line-height: 1.2; /* Interlineado reducido */
       font-weight: bold;
     }
 
     .waiting-message {
-      background: rgba(0, 0, 0, 0.7);
-      border: 2px dashed #666;
-      color: #999;
+      background: rgba(0, 0, 0, 0.2); /* Más translúcido */
+      border: 1px dashed rgba(255, 255, 255, 0.3); /* Borde más sutil */
+      color: #ccc; /* Texto más claro */
       text-align: center;
-      padding: 20px;
-      border-radius: 15px;
+      padding: 10px; /* Padding reducido */
+      border-radius: 8px; /* Bordes más pequeños */
       font-style: italic;
+      font-size: 0.8em; /* Texto más pequeño */
     }
 
     @keyframes slideIn {
