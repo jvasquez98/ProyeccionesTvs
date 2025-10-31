@@ -394,12 +394,12 @@
       // Agregar al inicio (mensajes más recientes arriba)
       container.insertBefore(messageElement, container.firstChild);
       
-      // Limitar a 5 mensajes máximo
-      if (container.children.length > 5) {
+      // Limitar a 3 mensajes máximo
+      if (container.children.length > 3) {
         container.removeChild(container.lastChild);
       }
       
-      // Auto-eliminar mensaje después de 30 segundos
+      // Auto-eliminar mensaje después de 5 segundos
       setTimeout(() => {
         if (messageElement.parentNode === container) {
           container.removeChild(messageElement);
@@ -409,7 +409,7 @@
             waitingMessage.style.display = 'block';
           }
         }
-      }, 30000);
+      }, 5000);
     }
   </script>
 </body>
