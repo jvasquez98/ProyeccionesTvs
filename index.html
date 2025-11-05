@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="320">
+  <meta http-equiv="refresh" content="300">
   <title>ProyeccionesExpertis_JV</title>
   <style>
     body {
@@ -233,14 +233,6 @@
     <img src="./images/imagen_23.jpg" alt="Imagen 23" />
     <img src="./images/imagen_24.jpg" alt="Imagen 24" />
     <img src="./images/imagen_25.jpg" alt="Imagen 25" />
-    <img src="./images/imagen_26.jpg" alt="Imagen 26" />
-    <img src="./images/imagen_27.jpg" alt="Imagen 27" />
-    <img src="./images/imagen_28.jpg" alt="Imagen 28" />
-    <img src="./images/imagen_29.jpg" alt="Imagen 29" />
-    <img src="./images/imagen_30.jpg" alt="Imagen 30" />
-    <img src="./images/imagen_31.jpg" alt="Imagen 31" />
-    <img src="./images/imagen_32.jpg" alt="Imagen 32" />
-    <img src="./images/imagen_33.jpg" alt="Imagen 33" />
 
     <button class="arrow arrow-left" id="prev">&#8592;</button>
     <button class="arrow arrow-right" id="next">&#8594;</button>
@@ -323,11 +315,11 @@
       showImage(current);
     });
 
-    // Cambio automático cada 10 segundos
+    // Cambio automático cada 12 segundos
     setInterval(() => {
       current = (current + 1) % images.length;
       showImage(current);
-    }, 10000);
+    }, 12000);
 
     // Contador de actualización
     function updateCountdown() {
