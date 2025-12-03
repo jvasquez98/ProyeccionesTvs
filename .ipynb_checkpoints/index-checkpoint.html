@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="312">
+  <meta http-equiv="refresh" content="330">
   <title>ProyeccionesExpertis_JV</title>
   <style>
     body {
@@ -230,10 +230,6 @@
     <img src="./images/imagen_20.jpg" alt="Imagen 20" />
     <img src="./images/imagen_21.jpg" alt="Imagen 21" />
     <img src="./images/imagen_22.jpg" alt="Imagen 22" />
-    <img src="./images/imagen_23.jpg" alt="Imagen 23" />
-    <img src="./images/imagen_24.jpg" alt="Imagen 24" />
-    <img src="./images/imagen_25.jpg" alt="Imagen 25" />
-    <img src="./images/imagen_26.jpg" alt="Imagen 26" />
 
     <button class="arrow arrow-left" id="prev">&#8592;</button>
     <button class="arrow arrow-right" id="next">&#8594;</button>
@@ -296,7 +292,7 @@
     const timerProgress = document.getElementById('timer-progress');
     let current = 0;
     
-    let initialCountdown = 312;
+    let initialCountdown = 330;
     let countdown = initialCountdown;
     let countdownActive = true;
 
@@ -320,7 +316,7 @@
     setInterval(() => {
       current = (current + 1) % images.length;
       showImage(current);
-    }, 12000);
+    }, 15000);
 
     // Contador de actualización
     function updateCountdown() {
