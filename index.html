@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="330">
+  <meta http-equiv="refresh" content="255">
   <title>ProyeccionesExpertis_JV</title>
   <style>
     body {
@@ -292,7 +292,7 @@
     const timerProgress = document.getElementById('timer-progress');
     let current = 0;
     
-    let initialCountdown = 330;
+    let initialCountdown = 255;
     let countdown = initialCountdown;
     let countdownActive = true;
 
@@ -312,7 +312,7 @@
       showImage(current);
     });
 
-    // Cambio automático cada 12 segundos
+    // Cambio automático cada 15 segundos
     setInterval(() => {
       current = (current + 1) % images.length;
       showImage(current);
